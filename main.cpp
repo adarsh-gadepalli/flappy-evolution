@@ -1,4 +1,5 @@
 #include <iostream>
+#include <random>
 
 struct Bird {
     int x, y;
@@ -12,12 +13,15 @@ struct Pipe {
 
 int main() {
 
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_int_distribution<> dis(30, 70);
+
     Bird bird;
     bird.x = 0;
     bird.y = 50;
     bird.vx = 1;
     bird.vy = -1;
-    Pipe pipe;
     
 
     int score = 0;
@@ -33,9 +37,18 @@ int main() {
             std::cout << "Bird out of bounds at tick " << t << "\n";
             break;
         };
-            
+        
+        // generate new pipe every 50 ticks
+        if (t % 50 == 0) {
+            Pipe pipe;
+            pipe.x = bird.x + 100;
+            pipe.gap = dis(gen);
+        }
+
+
     }
 
+    std::cout << "Final score: " << score << "\n";
     return 0;
     
 }
