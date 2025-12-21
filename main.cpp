@@ -21,6 +21,7 @@ const float PIPE_WIDTH = 60.0f;
 const float BIRD_SIZE = 20.0f;
 const float GRAVITY = 0.5f;
 const float JUMP_VELOCITY = -8.0f;
+const float SCROLL_SPEED = 2.0f;
 
 void render(sf::RenderWindow& window, const Bird& bird, const std::vector<Pipe>& pipes, int score) {
     window.clear(sf::Color(135, 206, 235)); // Sky blue background
@@ -81,7 +82,7 @@ int main() {
     Bird bird;
     bird.x = 100.0f;
     bird.y = WINDOW_HEIGHT / 2.0f;
-    bird.vx = 2.0f;
+    bird.vx = 0.0f;
     bird.vy = 0.0f;
 
     std::vector<Pipe> pipes;
@@ -132,7 +133,7 @@ int main() {
 
         // Update pipe positions (move left)
         for (auto& pipe : pipes) {
-            pipe.x -= bird.vx;
+            pipe.x -= SCROLL_SPEED;
         }
 
         // Remove pipes that are off screen
