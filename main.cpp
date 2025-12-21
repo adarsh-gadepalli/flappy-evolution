@@ -109,15 +109,48 @@ int main() {
         bird.y += bird.vy;
         bird.x += bird.vx;
 
-        // Check bird bounds
-        if (bird.y < 0) {
-            bird.y = 0;
-            bird.vy = 0;
+        // Check collisions (Game Over)
+        bool collision = false;
+
+        // if bird hits the top or bottom of the screen, out of bounds
+        if (bird.y < 0 || bird.y + BIRD_SIZE * 2 > WINDOW_HEIGHT - 50) {
+            collision = true;
         }
-        if (bird.y + BIRD_SIZE * 2 > WINDOW_HEIGHT - 50) {
-            bird.y = WINDOW_HEIGHT - 50 - BIRD_SIZE * 2;
-            bird.vy = 0;
-            // Game over - could add game over logic here
+
+        // Pipe collisions
+        if (!collision) {
+            sf::FloatRect birdRect(sf::Vector2f(bird.x, bird.y), sf::Vector2f(BIRD_SIZE * 2, BIRD_SIZE * 2));
+            for (const auto& pipe : pipes) {
+                float gapTop = pipe.gapY - pipe.gap / 2.0f;
+                float gapBottom = pipe.gapY + pipe.gap / 2.0f;
+
+                if (gapTop > 0) {
+                    sf::FloatRect pipeRect(sf::Vector2f(pipe.x, 0.0f), sf::Vector2f(PIPE_WIDTH, gapTop));
+
+                    // if bird overlaps with top pipe, collision
+                    if (birdRect.findIntersection(pipeRect)) {
+                        collision = true;
+                        break;
+                    }
+                }
+                if (gapBottom < WINDOW_HEIGHT - 50) {
+                    sf::FloatRect pipeRect(sf::Vector2f(pipe.x, gapBottom), sf::Vector2f(PIPE_WIDTH, (float)(WINDOW_HEIGHT - 50) - gapBottom));
+
+                    // if bird overlaps with bottom pipe, collision
+                    if (birdRect.findIntersection(pipeRect)) {
+                        collision = true;
+                        break;
+                    }
+                }
+            }
+        }
+
+        if (collision) {
+            bird.y = WINDOW_HEIGHT / 2.0f;
+            bird.vy = 0.0f;
+            pipes.clear();
+            score = 0;
+            pipeSpawnCounter = 0;
         }
 
         // Generate new pipes
