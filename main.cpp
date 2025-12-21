@@ -13,6 +13,7 @@ struct Pipe {
     float x;
     float gap;
     float gapY; // vertical position of gap center
+    bool passed = false;
 };
 
 const int WINDOW_WIDTH = 800;
@@ -23,7 +24,7 @@ const float GRAVITY = 0.5f;
 const float JUMP_VELOCITY = -8.0f;
 const float SCROLL_SPEED = 2.0f;
 
-void render(sf::RenderWindow& window, const Bird& bird, const std::vector<Pipe>& pipes, int score) {
+void render(sf::RenderWindow& window, const Bird& bird, const std::vector<Pipe>& pipes, int score, const sf::Font& font) {
     window.clear(sf::Color(135, 206, 235)); // Sky blue background
     
     // Draw ground
@@ -63,8 +64,13 @@ void render(sf::RenderWindow& window, const Bird& bird, const std::vector<Pipe>&
     birdShape.setFillColor(sf::Color(255, 200, 0)); // Yellow
     window.draw(birdShape);
     
-    // Draw score (simple text rendering would require font loading, so using a simple indicator)
-    // For now, we'll just display it in the console
+    // Draw score
+    sf::Text scoreText(font, std::to_string(score), 40);
+    scoreText.setPosition(sf::Vector2f(20.0f, 20.0f));
+    scoreText.setFillColor(sf::Color::White);
+    scoreText.setOutlineColor(sf::Color::Black);
+    scoreText.setOutlineThickness(2.0f);
+    window.draw(scoreText);
     
     window.display();
 }
@@ -89,6 +95,14 @@ int main() {
     int score = 0;
     int pipeSpawnCounter = 0;
     const int PIPE_SPAWN_INTERVAL = 120; // frames
+
+    sf::Font font;
+    if (!font.openFromFile("/System/Library/Fonts/Helvetica.ttc")) {
+        // Fallback or error handling
+        if (!font.openFromFile("/Library/Fonts/Arial.ttf")) {
+            std::cerr << "Error loading font\n";
+        }
+    }
 
     sf::Clock clock;
     
@@ -167,20 +181,25 @@ int main() {
         // Update pipe positions (move left)
         for (auto& pipe : pipes) {
             pipe.x -= SCROLL_SPEED;
+            
+            // Check if passed
+            if (!pipe.passed && pipe.x + PIPE_WIDTH < bird.x) {
+                score++;
+                pipe.passed = true;
+            }
         }
 
         // Remove pipes that are off screen
         for (auto it = pipes.begin(); it != pipes.end(); ) {
             if (it->x < -PIPE_WIDTH) {
                 it = pipes.erase(it);
-                score++; // Increment score when pipe passes
             } else {
                 it++;
             }
         }
         
         // Render everything
-        render(window, bird, pipes, score);
+        render(window, bird, pipes, score, font);
     }
 
     std::cout << "Final score: " << score << "\n";
