@@ -24,7 +24,12 @@ const float GRAVITY = 0.5f;
 const float JUMP_VELOCITY = -8.0f;
 const float SCROLL_SPEED = 2.0f;
 
-void render(sf::RenderWindow& window, const Bird& bird, const std::vector<Pipe>& pipes, int score, const sf::Font& font) {
+enum class GameState {
+    START,
+    PLAYING
+};
+
+void render(sf::RenderWindow& window, const Bird& bird, const std::vector<Pipe>& pipes, int score, int highScore, GameState state, const sf::Font& font) {
     window.clear(sf::Color(135, 206, 235)); // Sky blue background
     
     // Draw ground
@@ -33,44 +38,66 @@ void render(sf::RenderWindow& window, const Bird& bird, const std::vector<Pipe>&
     ground.setFillColor(sf::Color(34, 139, 34)); // Forest green
     window.draw(ground);
     
-    // Draw pipes
-    for (const auto& pipe : pipes) {
-        if (pipe.x > -PIPE_WIDTH && pipe.x < WINDOW_WIDTH + PIPE_WIDTH) {
-            float gapTop = pipe.gapY - pipe.gap / 2;
-            float gapBottom = pipe.gapY + pipe.gap / 2;
-            
-            // Top pipe
-            if (gapTop > 0) {
-                sf::RectangleShape topPipe(sf::Vector2f(PIPE_WIDTH, gapTop));
-                topPipe.setPosition(sf::Vector2f(pipe.x, 0));
-                topPipe.setFillColor(sf::Color(0, 150, 0)); // Dark green
-                window.draw(topPipe);
-            }
-            
-            // Bottom pipe
-            if (gapBottom < WINDOW_HEIGHT - 50) {
-                float bottomPipeHeight = (WINDOW_HEIGHT - 50) - gapBottom;
-                sf::RectangleShape bottomPipe(sf::Vector2f(PIPE_WIDTH, bottomPipeHeight));
-                bottomPipe.setPosition(sf::Vector2f(pipe.x, gapBottom));
-                bottomPipe.setFillColor(sf::Color(0, 150, 0)); // Dark green
-                window.draw(bottomPipe);
+    if (state == GameState::START) {
+        // Draw "Press Space to Start"
+        sf::Text startText(font, "Press Space to Start", 50);
+        sf::FloatRect textRect = startText.getLocalBounds();
+        startText.setOrigin(sf::Vector2f(textRect.position.x + textRect.size.x/2.0f, textRect.position.y + textRect.size.y/2.0f));
+        startText.setPosition(sf::Vector2f(WINDOW_WIDTH/2.0f, WINDOW_HEIGHT/2.0f - 50));
+        startText.setFillColor(sf::Color::White);
+        startText.setOutlineColor(sf::Color::Black);
+        startText.setOutlineThickness(3.0f);
+        window.draw(startText);
+
+        // Draw High Score
+        sf::Text highScoreText(font, "High Score: " + std::to_string(highScore), 40);
+        sf::FloatRect hsRect = highScoreText.getLocalBounds();
+        highScoreText.setOrigin(sf::Vector2f(hsRect.position.x + hsRect.size.x/2.0f, hsRect.position.y + hsRect.size.y/2.0f));
+        highScoreText.setPosition(sf::Vector2f(WINDOW_WIDTH/2.0f, WINDOW_HEIGHT/2.0f + 50));
+        highScoreText.setFillColor(sf::Color::Yellow);
+        highScoreText.setOutlineColor(sf::Color::Black);
+        highScoreText.setOutlineThickness(2.0f);
+        window.draw(highScoreText);
+    } else {
+        // Draw pipes
+        for (const auto& pipe : pipes) {
+            if (pipe.x > -PIPE_WIDTH && pipe.x < WINDOW_WIDTH + PIPE_WIDTH) {
+                float gapTop = pipe.gapY - pipe.gap / 2;
+                float gapBottom = pipe.gapY + pipe.gap / 2;
+                
+                // Top pipe
+                if (gapTop > 0) {
+                    sf::RectangleShape topPipe(sf::Vector2f(PIPE_WIDTH, gapTop));
+                    topPipe.setPosition(sf::Vector2f(pipe.x, 0));
+                    topPipe.setFillColor(sf::Color(0, 150, 0)); // Dark green
+                    window.draw(topPipe);
+                }
+                
+                // Bottom pipe
+                if (gapBottom < WINDOW_HEIGHT - 50) {
+                    float bottomPipeHeight = (WINDOW_HEIGHT - 50) - gapBottom;
+                    sf::RectangleShape bottomPipe(sf::Vector2f(PIPE_WIDTH, bottomPipeHeight));
+                    bottomPipe.setPosition(sf::Vector2f(pipe.x, gapBottom));
+                    bottomPipe.setFillColor(sf::Color(0, 150, 0)); // Dark green
+                    window.draw(bottomPipe);
+                }
             }
         }
+        
+        // Draw bird
+        sf::CircleShape birdShape(BIRD_SIZE);
+        birdShape.setPosition(sf::Vector2f(bird.x, bird.y));
+        birdShape.setFillColor(sf::Color(255, 200, 0)); // Yellow
+        window.draw(birdShape);
+        
+        // Draw score
+        sf::Text scoreText(font, std::to_string(score), 40);
+        scoreText.setPosition(sf::Vector2f(20.0f, 20.0f));
+        scoreText.setFillColor(sf::Color::White);
+        scoreText.setOutlineColor(sf::Color::Black);
+        scoreText.setOutlineThickness(2.0f);
+        window.draw(scoreText);
     }
-    
-    // Draw bird
-    sf::CircleShape birdShape(BIRD_SIZE);
-    birdShape.setPosition(sf::Vector2f(bird.x, bird.y));
-    birdShape.setFillColor(sf::Color(255, 200, 0)); // Yellow
-    window.draw(birdShape);
-    
-    // Draw score
-    sf::Text scoreText(font, std::to_string(score), 40);
-    scoreText.setPosition(sf::Vector2f(20.0f, 20.0f));
-    scoreText.setFillColor(sf::Color::White);
-    scoreText.setOutlineColor(sf::Color::Black);
-    scoreText.setOutlineThickness(2.0f);
-    window.draw(scoreText);
     
     window.display();
 }
@@ -93,6 +120,8 @@ int main() {
 
     std::vector<Pipe> pipes;
     int score = 0;
+    int highScore = 0;
+    GameState gameState = GameState::START;
     int pipeSpawnCounter = 0;
     const int PIPE_SPAWN_INTERVAL = 120; // frames
 
@@ -113,93 +142,105 @@ int main() {
             }
             if (auto* keyPressed = event->getIf<sf::Event::KeyPressed>()) {
                 if (keyPressed->code == sf::Keyboard::Key::Space) {
-                    bird.vy = JUMP_VELOCITY; // Jump/flap
-                }
-            }
-        }
-
-        // Update bird physics
-        bird.vy += GRAVITY;
-        bird.y += bird.vy;
-        bird.x += bird.vx;
-
-        // Check collisions (Game Over)
-        bool collision = false;
-
-        // if bird hits the top or bottom of the screen, out of bounds
-        if (bird.y < 0 || bird.y + BIRD_SIZE * 2 > WINDOW_HEIGHT - 50) {
-            collision = true;
-        }
-
-        // Pipe collisions
-        if (!collision) {
-            sf::FloatRect birdRect(sf::Vector2f(bird.x, bird.y), sf::Vector2f(BIRD_SIZE * 2, BIRD_SIZE * 2));
-            for (const auto& pipe : pipes) {
-                float gapTop = pipe.gapY - pipe.gap / 2.0f;
-                float gapBottom = pipe.gapY + pipe.gap / 2.0f;
-
-                if (gapTop > 0) {
-                    sf::FloatRect pipeRect(sf::Vector2f(pipe.x, 0.0f), sf::Vector2f(PIPE_WIDTH, gapTop));
-
-                    // if bird overlaps with top pipe, collision
-                    if (birdRect.findIntersection(pipeRect)) {
-                        collision = true;
-                        break;
-                    }
-                }
-                if (gapBottom < WINDOW_HEIGHT - 50) {
-                    sf::FloatRect pipeRect(sf::Vector2f(pipe.x, gapBottom), sf::Vector2f(PIPE_WIDTH, (float)(WINDOW_HEIGHT - 50) - gapBottom));
-
-                    // if bird overlaps with bottom pipe, collision
-                    if (birdRect.findIntersection(pipeRect)) {
-                        collision = true;
-                        break;
+                    if (gameState == GameState::START) {
+                        // Reset game state
+                        bird.y = WINDOW_HEIGHT / 2.0f;
+                        bird.vy = 0.0f;
+                        pipes.clear();
+                        score = 0;
+                        pipeSpawnCounter = 0;
+                        gameState = GameState::PLAYING;
+                        bird.vy = JUMP_VELOCITY;
+                    } else {
+                        bird.vy = JUMP_VELOCITY; // Jump/flap
                     }
                 }
             }
         }
 
-        if (collision) {
-            bird.y = WINDOW_HEIGHT / 2.0f;
-            bird.vy = 0.0f;
-            pipes.clear();
-            score = 0;
-            pipeSpawnCounter = 0;
-        }
+        if (gameState == GameState::PLAYING) {
+            // Update bird physics
+            bird.vy += GRAVITY;
+            bird.y += bird.vy;
+            bird.x += bird.vx;
 
-        // Generate new pipes
-        pipeSpawnCounter++;
-        if (pipeSpawnCounter >= PIPE_SPAWN_INTERVAL) {
-            Pipe pipe;
-            pipe.x = WINDOW_WIDTH;
-            pipe.gap = gapSize(gen);
-            pipe.gapY = gapY(gen);
-            pipes.push_back(pipe);
-            pipeSpawnCounter = 0;
-        }
+            // Check collisions (Game Over)
+            bool collision = false;
 
-        // Update pipe positions (move left)
-        for (auto& pipe : pipes) {
-            pipe.x -= SCROLL_SPEED;
-            
-            // Check if passed
-            if (!pipe.passed && pipe.x + PIPE_WIDTH < bird.x) {
-                score++;
-                pipe.passed = true;
+            // if bird hits the top or bottom of the screen, out of bounds
+            if (bird.y < 0 || bird.y + BIRD_SIZE * 2 > WINDOW_HEIGHT - 50) {
+                collision = true;
             }
-        }
 
-        // Remove pipes that are off screen
-        for (auto it = pipes.begin(); it != pipes.end(); ) {
-            if (it->x < -PIPE_WIDTH) {
-                it = pipes.erase(it);
+            // Pipe collisions
+            if (!collision) {
+                sf::FloatRect birdRect(sf::Vector2f(bird.x, bird.y), sf::Vector2f(BIRD_SIZE * 2, BIRD_SIZE * 2));
+                for (const auto& pipe : pipes) {
+                    float gapTop = pipe.gapY - pipe.gap / 2.0f;
+                    float gapBottom = pipe.gapY + pipe.gap / 2.0f;
+
+                    if (gapTop > 0) {
+                        sf::FloatRect pipeRect(sf::Vector2f(pipe.x, 0.0f), sf::Vector2f(PIPE_WIDTH, gapTop));
+
+                        // if bird overlaps with top pipe, collision
+                        if (birdRect.findIntersection(pipeRect)) {
+                            collision = true;
+                            break;
+                        }
+                    }
+                    if (gapBottom < WINDOW_HEIGHT - 50) {
+                        sf::FloatRect pipeRect(sf::Vector2f(pipe.x, gapBottom), sf::Vector2f(PIPE_WIDTH, (float)(WINDOW_HEIGHT - 50) - gapBottom));
+
+                        // if bird overlaps with bottom pipe, collision
+                        if (birdRect.findIntersection(pipeRect)) {
+                            collision = true;
+                            break;
+                        }
+                    }
+                }
+            }
+
+            if (collision) {
+                if (score > highScore) {
+                    highScore = score;
+                }
+                gameState = GameState::START;
             } else {
-                it++;
+                // Generate new pipes
+                pipeSpawnCounter++;
+                if (pipeSpawnCounter >= PIPE_SPAWN_INTERVAL) {
+                    Pipe pipe;
+                    pipe.x = WINDOW_WIDTH;
+                    pipe.gap = gapSize(gen);
+                    pipe.gapY = gapY(gen);
+                    pipes.push_back(pipe);
+                    pipeSpawnCounter = 0;
+                }
+
+                // Update pipe positions (move left)
+                for (auto& pipe : pipes) {
+                    pipe.x -= SCROLL_SPEED;
+                    
+                    // Check if passed
+                    if (!pipe.passed && pipe.x + PIPE_WIDTH < bird.x) {
+                        score++;
+                        pipe.passed = true;
+                    }
+                }
+
+                // Remove pipes that are off screen
+                for (auto it = pipes.begin(); it != pipes.end(); ) {
+                    if (it->x < -PIPE_WIDTH) {
+                        it = pipes.erase(it);
+                    } else {
+                        it++;
+                    }
+                }
             }
         }
         
         // Render everything
-        render(window, bird, pipes, score, font);
+        render(window, bird, pipes, score, highScore, gameState, font);
     }
 
     std::cout << "Final score: " << score << "\n";
