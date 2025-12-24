@@ -1,0 +1,14 @@
+[
+{
+  "directory": "/Users/Toni/Vault/flappy-evolution/build",
+  "command": "/Library/Developer/CommandLineTools/usr/bin/c++  -isystem /opt/homebrew/include -std=gnu++17 -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk -o CMakeFiles/flappy.dir/main.cpp.o -c /Users/Toni/Vault/flappy-evolution/main.cpp",
+  "file": "/Users/Toni/Vault/flappy-evolution/main.cpp",
+  "output": "CMakeFiles/flappy.dir/main.cpp.o"
+},
+{
+  "directory": "/Users/Toni/Vault/flappy-evolution/build",
+  "command": "/Library/Developer/CommandLineTools/usr/bin/c++  -isystem /opt/homebrew/include -std=gnu++17 -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk -o CMakeFiles/flappy.dir/renderer.cpp.o -c /Users/Toni/Vault/flappy-evolution/renderer.cpp",
+  "file": "/Users/Toni/Vault/flappy-evolution/renderer.cpp",
+  "output": "CMakeFiles/flappy.dir/renderer.cpp.o"
+}
+]
