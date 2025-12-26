@@ -1,7 +1,5 @@
 #include "renderer.h"
-#include "simulation.h"
 #include "game_types.h"
-#include "neural_network.h"
 #include <SFML/Graphics.hpp>
 
 void render(sf::RenderWindow& window, const Bird& bird, 
@@ -77,8 +75,4 @@ void render(sf::RenderWindow& window, const Bird& bird,
     }
     
     window.display();
-}
-
-GameResult simulateGame(NeuralNetwork& agent, std::mt19937& gen, std::uniform_real_distribution<float>& gapSize, std::uniform_real_distribution<float>& gapY, bool render = false, sf::RenderWindow* window = nullptr) {
-
 }
