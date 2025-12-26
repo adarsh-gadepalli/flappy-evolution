@@ -11,8 +11,14 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 find_package(SFML 3.0.2 COMPONENTS Graphics Window System REQUIRED)
 
 # Add executable
-add_executable(flappy main.cpp renderer.cpp simulation.cpp)
+add_executable(flappy main.cpp renderer.cpp simulation.cpp neural_network.cpp)
+# Add example simulation executable (no SFML needed)
+add_executable(test_simulation example_simulation.cpp simulation.cpp)
+target_include_directories(test_simulation PRIVATE ${CMAKE_SOURCE_DIR})
 
+# Add neural network test executable
+add_executable(test_neural_network test_neural_network.cpp neural_network.cpp)
+target_include_directories(test_neural_network PRIVATE ${CMAKE_SOURCE_DIR})
 # Link SFML libraries (SFML 3.0 uses SFML:: namespace targets)
 target_link_libraries(flappy SFML::Graphics SFML::Window SFML::System)
 

@@ -10,5 +10,41 @@
   "command": "/Library/Developer/CommandLineTools/usr/bin/c++  -isystem /opt/homebrew/include -std=gnu++17 -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk -o CMakeFiles/flappy.dir/renderer.cpp.o -c /Users/Toni/Vault/flappy-evolution/renderer.cpp",
   "file": "/Users/Toni/Vault/flappy-evolution/renderer.cpp",
   "output": "CMakeFiles/flappy.dir/renderer.cpp.o"
+},
+{
+  "directory": "/Users/Toni/Vault/flappy-evolution/build",
+  "command": "/Library/Developer/CommandLineTools/usr/bin/c++  -isystem /opt/homebrew/include -std=gnu++17 -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk -o CMakeFiles/flappy.dir/simulation.cpp.o -c /Users/Toni/Vault/flappy-evolution/simulation.cpp",
+  "file": "/Users/Toni/Vault/flappy-evolution/simulation.cpp",
+  "output": "CMakeFiles/flappy.dir/simulation.cpp.o"
+},
+{
+  "directory": "/Users/Toni/Vault/flappy-evolution/build",
+  "command": "/Library/Developer/CommandLineTools/usr/bin/c++  -isystem /opt/homebrew/include -std=gnu++17 -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk -o CMakeFiles/flappy.dir/neural_network.cpp.o -c /Users/Toni/Vault/flappy-evolution/neural_network.cpp",
+  "file": "/Users/Toni/Vault/flappy-evolution/neural_network.cpp",
+  "output": "CMakeFiles/flappy.dir/neural_network.cpp.o"
+},
+{
+  "directory": "/Users/Toni/Vault/flappy-evolution/build",
+  "command": "/Library/Developer/CommandLineTools/usr/bin/c++  -I/Users/Toni/Vault/flappy-evolution -std=gnu++17 -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk -o CMakeFiles/test_simulation.dir/example_simulation.cpp.o -c /Users/Toni/Vault/flappy-evolution/example_simulation.cpp",
+  "file": "/Users/Toni/Vault/flappy-evolution/example_simulation.cpp",
+  "output": "CMakeFiles/test_simulation.dir/example_simulation.cpp.o"
+},
+{
+  "directory": "/Users/Toni/Vault/flappy-evolution/build",
+  "command": "/Library/Developer/CommandLineTools/usr/bin/c++  -I/Users/Toni/Vault/flappy-evolution -std=gnu++17 -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk -o CMakeFiles/test_simulation.dir/simulation.cpp.o -c /Users/Toni/Vault/flappy-evolution/simulation.cpp",
+  "file": "/Users/Toni/Vault/flappy-evolution/simulation.cpp",
+  "output": "CMakeFiles/test_simulation.dir/simulation.cpp.o"
+},
+{
+  "directory": "/Users/Toni/Vault/flappy-evolution/build",
+  "command": "/Library/Developer/CommandLineTools/usr/bin/c++  -I/Users/Toni/Vault/flappy-evolution -std=gnu++17 -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk -o CMakeFiles/test_neural_network.dir/test_neural_network.cpp.o -c /Users/Toni/Vault/flappy-evolution/test_neural_network.cpp",
+  "file": "/Users/Toni/Vault/flappy-evolution/test_neural_network.cpp",
+  "output": "CMakeFiles/test_neural_network.dir/test_neural_network.cpp.o"
+},
+{
+  "directory": "/Users/Toni/Vault/flappy-evolution/build",
+  "command": "/Library/Developer/CommandLineTools/usr/bin/c++  -I/Users/Toni/Vault/flappy-evolution -std=gnu++17 -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk -o CMakeFiles/test_neural_network.dir/neural_network.cpp.o -c /Users/Toni/Vault/flappy-evolution/neural_network.cpp",
+  "file": "/Users/Toni/Vault/flappy-evolution/neural_network.cpp",
+  "output": "CMakeFiles/test_neural_network.dir/neural_network.cpp.o"
 }
 ]
